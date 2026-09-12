@@ -24,6 +24,7 @@ pub struct LazyJsonLineReader {
     pub(crate) schema_overwrite: Option<SchemaRef>,
     pub(crate) row_index: Option<RowIndex>,
     pub(crate) infer_schema_length: Option<NonZeroUsize>,
+    pub(crate) infer_schema_files: NonZeroUsize,
     pub(crate) n_rows: Option<usize>,
     pub(crate) ignore_errors: bool,
     pub(crate) include_file_paths: Option<PlSmallStr>,
@@ -45,6 +46,7 @@ impl LazyJsonLineReader {
             schema_overwrite: None,
             row_index: None,
             infer_schema_length: NonZeroUsize::new(100),
+            infer_schema_files: const { NonZeroUsize::new(10).unwrap() },
             ignore_errors: false,
             n_rows: None,
             include_file_paths: None,
@@ -83,6 +85,14 @@ impl LazyJsonLineReader {
     #[must_use]
     pub fn with_infer_schema_length(mut self, num_rows: Option<NonZeroUsize>) -> Self {
         self.infer_schema_length = num_rows;
+        self
+    }
+    /// Set the number of files to use when inferring the json schema.
+    /// the default is 10 files.
+    /// Ignored when the schema is specified explicitly using [`Self::with_schema`].
+    #[must_use]
+    pub fn with_infer_schema_files(mut self, infer_schema_files: NonZeroUsize) -> Self {
+        self.infer_schema_files = infer_schema_files;
         self
     }
     /// Set the JSON file's schema
@@ -152,6 +162,7 @@ impl LazyFileListReader for LazyJsonLineReader {
         let options = NDJsonReadOptions {
             n_threads: None,
             infer_schema_length: self.infer_schema_length,
+            infer_schema_files: self.infer_schema_files,
             chunk_size: NonZeroUsize::new(1 << 18).unwrap(),
             low_memory: self.low_memory,
             ignore_errors: self.ignore_errors,

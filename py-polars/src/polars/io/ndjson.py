@@ -16,6 +16,8 @@ from polars.io.cloud.credential_provider._builder import (
 with contextlib.suppress(ImportError):  # Module not available when building docs
     from polars._plr import PyLazyFrame
 
+_N_INFER_FILES_DEFAULT = 10
+
 if TYPE_CHECKING:
     from polars import DataFrame, LazyFrame
     from polars._typing import SchemaDefinition, StorageOptionsDict
@@ -55,6 +57,7 @@ def read_ndjson(
     schema: SchemaDefinition | None = None,
     schema_overrides: SchemaDefinition | None = None,
     infer_schema_length: int | None = N_INFER_DEFAULT,
+    infer_schema_files: int = _N_INFER_FILES_DEFAULT,
     batch_size: int | None = 1024,
     n_rows: int | None = None,
     low_memory: bool = False,
@@ -89,8 +92,15 @@ def read_ndjson(
         Support type specification or override of one or more columns; note that
         any dtypes inferred from the schema param will be overridden.
     infer_schema_length
-        The maximum number of rows to scan for schema inference.
+        The maximum number of rows to scan for schema inference. This applies
+        individually to each file included according to `infer_schema_files`.
         If set to `None`, the full data may be scanned *(this is slow)*.
+    infer_schema_files
+        How many files to use when inferring schema.
+
+        .. warning::
+            This functionality is considered **unstable**. It may be changed
+            at any point without it being considered a breaking change.
     batch_size
         Number of rows to read in each batch.
     n_rows
@@ -167,6 +177,7 @@ def read_ndjson(
         schema=schema,
         schema_overrides=schema_overrides,
         infer_schema_length=infer_schema_length,
+        infer_schema_files=infer_schema_files,
         batch_size=batch_size,
         n_rows=n_rows,
         low_memory=low_memory,
@@ -228,6 +239,7 @@ def scan_ndjson(
     schema: SchemaDefinition | None = None,
     schema_overrides: SchemaDefinition | None = None,
     infer_schema_length: int | None = N_INFER_DEFAULT,
+    infer_schema_files: int = _N_INFER_FILES_DEFAULT,
     batch_size: int | None = 1024,
     n_rows: int | None = None,
     low_memory: bool = False,
@@ -266,8 +278,15 @@ def scan_ndjson(
         Support type specification or override of one or more columns; note that
         any dtypes inferred from the schema param will be overridden.
     infer_schema_length
-        The maximum number of rows to scan for schema inference.
+        The maximum number of rows to scan for schema inference. This applies
+        individually to each file included according to `infer_schema_files`.
         If set to `None`, the full data may be scanned *(this is slow)*.
+    infer_schema_files
+        How many files to use when inferring schema.
+
+        .. warning::
+            This functionality is considered **unstable**. It may be changed
+            at any point without it being considered a breaking change.
     batch_size
         Number of rows to read in each batch.
     n_rows
@@ -334,6 +353,7 @@ def scan_ndjson(
         source,
         sources,
         infer_schema_length=infer_schema_length,
+        infer_schema_files=infer_schema_files,
         schema=schema,
         schema_overrides=schema_overrides,
         batch_size=batch_size,

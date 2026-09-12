@@ -113,7 +113,7 @@
   "MatchToSchemaPerColumn": "381fb1246af9cd63dcc480a7063ae91a082c65ddebe984b1cb0aacb0d4a1503c",
   "MissingColumnsPolicy": "8cd4647d5135721a67fc33d6328f670de4fca2fe2aea76d287b3f4c6fa94200a",
   "MissingColumnsPolicyOrExpr": "7cbf4eca11fc4df06789df5391417f1fb495f0e8e64790c16efc058a43be8e7a",
-  "NDJsonReadOptions": "e59a6e1cd77f97639c41af7a96e6014973df0e7d07f6aa9c7a6d18cb45d548a4",
+  "NDJsonReadOptions": "40fa38753073503fa6e3ec8b2ab44c83d71944cf96e8d0080a62aba303ee2827",
   "NDJsonWriterOptions": "b5626077ed7f8f602a07f904f0d6a01b9f69a80cd86d3f9e9fb4da995206a4c2",
   "NonExistent": "da129074a40fa946168b247dc1292310dab983bd858a6fe4a484c2c6a92be213",
   "NullBehavior": "16f6974cd01c94023486e622c36c9321076eea87c6818bf9ffdaa61128eb4a9c",

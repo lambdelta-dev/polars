@@ -4,6 +4,8 @@ mod arity;
 mod cse;
 #[cfg(feature = "parquet")]
 mod io;
+#[cfg(feature = "json")]
+mod json;
 mod logical;
 #[cfg(feature = "streaming")]
 mod observer;

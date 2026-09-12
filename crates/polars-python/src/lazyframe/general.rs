@@ -90,13 +90,14 @@ impl PyLazyFrame {
     #[cfg(feature = "json")]
     #[allow(clippy::too_many_arguments)]
     #[pyo3(signature = (
-        source, sources, infer_schema_length, schema, schema_overrides, batch_size, n_rows, low_memory, rechunk,
+        source, sources, infer_schema_length, infer_schema_files, schema, schema_overrides, batch_size, n_rows, low_memory, rechunk,
         row_index, ignore_errors, include_file_paths, cloud_options, credential_provider
     ))]
     fn new_from_ndjson(
         source: Option<Py<PyAny>>,
         sources: Wrap<ScanSources>,
         infer_schema_length: Option<usize>,
+        infer_schema_files: NonZeroUsize,
         schema: Option<Wrap<Schema>>,
         schema_overrides: Option<Wrap<Schema>>,
         batch_size: Option<NonZeroUsize>,
@@ -135,6 +136,7 @@ impl PyLazyFrame {
 
         let lf = r
             .with_infer_schema_length(infer_schema_length.and_then(NonZeroUsize::new))
+            .with_infer_schema_files(infer_schema_files)
             .with_batch_size(batch_size)
             .with_n_rows(n_rows)
             .low_memory(low_memory)
