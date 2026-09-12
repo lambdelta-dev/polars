@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 import polars as pl
+from polars.exceptions import ComputeError
 from polars.testing import assert_frame_equal
 
 if TYPE_CHECKING:
@@ -166,6 +167,35 @@ def test_ndjson_list_arg(io_files_path: Path) -> None:
     assert df.shape == (54, 4)
     assert df.row(-1) == ("seafood", 194, 12.0, 1)
     assert df.row(0) == ("vegetables", 45, 0.5, 2)
+
+
+@pytest.mark.parametrize("lazy", [True, False])
+def test_ndjson_infer_schema_files(lazy: bool) -> None:
+    def read(*args: Any, **kwargs: Any) -> pl.DataFrame:
+        if lazy:
+            return pl.scan_ndjson(*args, **kwargs).collect()
+        return pl.read_ndjson(*args, **kwargs)
+
+    # A column that is `null` in the first file but a list in a later file should
+    # infer the supertype of all files instead of erroring (issue #24843).
+    data = [b'{"a": null}', b'{"a": [1, 2]}']
+
+    out = read(data)
+    assert out.schema == {"a": pl.List(pl.Int64)}
+    assert out.to_dict(as_series=False) == {"a": [None, [1, 2]]}
+
+    out = read(data, infer_schema_files=2)
+    assert out.schema == {"a": pl.List(pl.Int64)}
+
+    with pytest.raises(ComputeError):
+        read(data, infer_schema_files=1)
+
+    with pytest.raises(ValueError, match="invalid zero value"):
+        read(data, infer_schema_files=0)
+
+    # Fields that only occur in some of the files are unioned.
+    out = read([b'{"a": 1}', b'{"b": "x"}'])
+    assert out.schema == {"a": pl.Int64, "b": pl.String}
 
 
 def test_glob_single_scan(io_files_path: Path) -> None:

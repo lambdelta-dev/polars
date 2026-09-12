@@ -320,9 +320,16 @@ impl From<UnionArgs> for UnionOptions {
 pub struct NDJsonReadOptions {
     pub n_threads: Option<usize>,
     pub infer_schema_length: Option<NonZeroUsize>,
+    #[cfg_attr(feature = "serde", serde(default = "nonzero_usize_max"))]
+    pub infer_schema_files: NonZeroUsize,
     pub chunk_size: NonZeroUsize,
     pub low_memory: bool,
     pub ignore_errors: bool,
     pub schema: Option<SchemaRef>,
     pub schema_overwrite: Option<SchemaRef>,
+}
+
+#[cfg(feature = "serde")]
+const fn nonzero_usize_max() -> NonZeroUsize {
+    NonZeroUsize::MAX
 }

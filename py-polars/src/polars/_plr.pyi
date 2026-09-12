@@ -820,6 +820,7 @@ class PyLazyFrame:
         source: Any | None,
         sources: Any,
         infer_schema_length: int | None,
+        infer_schema_files: int,
         schema: Any | None,
         schema_overrides: Any | None,
         batch_size: int | None,
